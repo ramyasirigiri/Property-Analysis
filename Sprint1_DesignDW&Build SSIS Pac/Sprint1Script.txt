@@ -1,0 +1,183 @@
+---DimAusLocalSchool---
+
+CREATE TABLE [dbo].[DimAusLocalSchool](
+	[SchoolCode] [nvarchar](20) NULL,
+	[SchoolName] [nvarchar](100) NULL,
+	[Address] [nvarchar](200) NULL,
+	[Suburb] [nvarchar](100) NULL,
+	[StateCode] [nvarchar](10) NULL,
+	[PostCode] [nvarchar](10) NULL,
+	[SchoolType] [nvarchar](100) NULL,
+	[Latitude] [float] NULL,
+	[Longitude] [float] NULL,
+	[SchoolID] [int] NULL,
+	[DimSchoolKey] [int] IDENTITY(1,1) NOT NULL,
+ CONSTRAINT [PK_DimAusLocalSchool] PRIMARY KEY CLUSTERED 
+(
+	[DimSchoolKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+--DimDate--
+
+CREATE TABLE [dbo].[DimDate](
+	[DateKey] [int] NULL,
+	[year] [int] NULL,
+	[Quarter] [nvarchar](20) NULL,
+	[Month Number] [int] NULL,
+	[Month Name] [nvarchar](20) NULL,
+	[DimDateKey] [int] IDENTITY(1,1) NOT NULL,
+ CONSTRAINT [PK_DimDate] PRIMARY KEY CLUSTERED 
+(
+	[DimDateKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+---DimGeography---
+
+CREATE TABLE [dbo].[DimGeography](
+	[Suburb] [nvarchar](30) NULL,
+	[City] [nvarchar](30) NULL,
+	[State] [nvarchar](30) NULL,
+	[StateCode] [nvarchar](10) NULL,
+	[Latitude] [float] NULL,
+	[Longitude] [float] NULL,
+	[District] [nvarchar](30) NULL,
+	[PostCode] [nvarchar](10) NULL,
+	[SuburbID] [int] NULL,
+	[PostSuburbKey] [nvarchar](100) NULL,
+	[DimStateKey] [int] NULL,
+	[DimGeographyKey] [int] IDENTITY(1,1) NOT NULL,
+ CONSTRAINT [PK_DimGeography] PRIMARY KEY CLUSTERED 
+(
+	[DimGeographyKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+--DimStates--
+
+CREATE TABLE [dbo].[DimStates](
+	[DimStateKey] [int] IDENTITY(1,1) NOT NULL,
+	[StateKey] [int] NULL,
+	[StateName] [nvarchar](30) NULL,
+	[StateCode] [nvarchar](10) NULL,
+ CONSTRAINT [PK_DimStates] PRIMARY KEY CLUSTERED 
+(
+	[DimStateKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+--DimTransport--
+
+CREATE TABLE [dbo].[DimTransport](
+	[StopID] [nvarchar](20) NULL,
+	[StopName] [nvarchar](150) NULL,
+	[Suburb] [nvarchar](50) NULL,
+	[Mode] [nvarchar](10) NULL,
+	[Latitude] [float] NULL,
+	[Longitude] [float] NULL,
+	[StateCode] [nvarchar](10) NULL,
+	[TransportID] [int] NULL,
+	[PostCode] [nvarchar](10) NULL,
+	[DimTransportKey] [int] NOT NULL,
+ CONSTRAINT [PK_DimTransport] PRIMARY KEY CLUSTERED 
+(
+	[DimTransportKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+--FactCrime--
+
+CREATE TABLE [dbo].[FactCrime](
+	[Offence Category] [nvarchar](max) NULL,
+	[Offence Subcategory] [nvarchar](max) NULL,
+	[Year] [int] NULL,
+	[Recorded Incidents] [int] NULL,
+	[FactCrimeID] [int] IDENTITY(1,1) NOT NULL,
+	[DimGeographyKey] [int] NULL,
+	[DimDateKey] [int] NULL,
+ CONSTRAINT [PK_FactCrime] PRIMARY KEY CLUSTERED 
+(
+	[FactCrimeID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[FactCrime]  WITH CHECK ADD  CONSTRAINT [FK_FactCrime_DimDate] FOREIGN KEY([DimDateKey])
+REFERENCES [dbo].[DimDate] ([DimDateKey])
+GO
+
+--FactPropertyMedian--
+
+CREATE TABLE [dbo].[FactPropertyMedian](
+	[Median Price] [float] NULL,
+	[Number Of Sales] [nvarchar](10) NULL,
+	[Quater] [nvarchar](10) NULL,
+	[UpdatedYear] [int] NULL,
+	[UpdatedMonth] [int] NULL,
+	[DimGeographyKey] [int] NULL,
+	[DimTransportKey] [int] NULL,
+	[DimSchoolKey] [int] NULL,
+	[DimDateKey] [int] NULL,
+	[FactPropertyID] [int] IDENTITY(1,1) NOT NULL,
+ CONSTRAINT [PK_FactPropertyMedian] PRIMARY KEY CLUSTERED 
+(
+	[FactPropertyID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[FactPropertyMedian]  WITH CHECK ADD  CONSTRAINT [FK_FactPropertyMedian_DimAusLocalSchool] FOREIGN KEY([DimSchoolKey])
+REFERENCES [dbo].[DimAusLocalSchool] ([DimSchoolKey])
+GO
+
+ALTER TABLE [dbo].[FactPropertyMedian] CHECK CONSTRAINT [FK_FactPropertyMedian_DimAusLocalSchool]
+GO
+
+ALTER TABLE [dbo].[FactPropertyMedian]  WITH CHECK ADD  CONSTRAINT [FK_FactPropertyMedian_DimDate] FOREIGN KEY([DimDateKey])
+REFERENCES [dbo].[DimDate] ([DimDateKey])
+GO
+
+ALTER TABLE [dbo].[FactPropertyMedian] CHECK CONSTRAINT [FK_FactPropertyMedian_DimDate]
+GO
+
+ALTER TABLE [dbo].[FactPropertyMedian]  WITH CHECK ADD  CONSTRAINT [FK_FactPropertyMedian_DimGeography] FOREIGN KEY([DimGeographyKey])
+REFERENCES [dbo].[DimGeography] ([DimGeographyKey])
+GO
+
+ALTER TABLE [dbo].[FactPropertyMedian] CHECK CONSTRAINT [FK_FactPropertyMedian_DimGeography]
+GO
+
+ALTER TABLE [dbo].[FactPropertyMedian]  WITH CHECK ADD  CONSTRAINT [FK_FactPropertyMedian_DimTransport] FOREIGN KEY([DimTransportKey])
+REFERENCES [dbo].[DimTransport] ([DimTransportKey])
+GO
+
+ALTER TABLE [dbo].[FactPropertyMedian] CHECK CONSTRAINT [FK_FactPropertyMedian_DimTransport]
+GO
+
+---FactRentalMedian--
+
+CREATE TABLE [dbo].[FactRentalMedian](
+	[TypeOfProperty] [nvarchar](30) NULL,
+	[Rent] [int] NULL,
+	[RentalID] [int] NOT NULL,
+	[DimGeographyKey] [int] NULL,
+ CONSTRAINT [PK_FactRentalMedian] PRIMARY KEY CLUSTERED 
+(
+	[RentalID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[FactRentalMedian]  WITH CHECK ADD  CONSTRAINT [FK_FactRentalMedian_DimGeography] FOREIGN KEY([DimGeographyKey])
+REFERENCES [dbo].[DimGeography] ([DimGeographyKey])
+GO
+
+ALTER TABLE [dbo].[FactRentalMedian] CHECK CONSTRAINT [FK_FactRentalMedian_DimGeography]
+GO
