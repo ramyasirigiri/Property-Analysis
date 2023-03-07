@@ -1,0 +1,141 @@
+----DimDate----
+
+CREATE TABLE [dbo].[DimDate](
+	[DateKey] [nvarchar](255) NOT NULL,
+	[FullDate] [datetime] NULL,
+	[DateName] [nvarchar](255) NULL,
+	[DayOfWeek] [float] NULL,
+	[DayNameOfWeek] [nvarchar](255) NULL,
+	[DayOfMonth] [float] NULL,
+	[DayOfYear] [float] NULL,
+	[WeekdayWeekend] [nvarchar](255) NULL,
+	[WeekOfYear] [float] NULL,
+	[MonthName] [nvarchar](255) NULL,
+	[MonthOfYear] [float] NULL,
+	[IsLastDayOfMonth] [nvarchar](255) NULL,
+	[CalendarQuarter] [float] NULL,
+	[CalendarYear] [int] NULL,
+	[CalendarYearMonth] [nvarchar](255) NULL,
+	[CalendarYearQtr] [nvarchar](255) NULL,
+	[FiscalMonthOfYear] [float] NULL,
+	[FiscalQuarter] [float] NULL,
+	[FiscalYear] [float] NULL,
+	[FiscalYearMonth] [nvarchar](255) NULL,
+	[FiscalYearQtr] [nvarchar](255) NULL,
+ CONSTRAINT [PK_DimDate] PRIMARY KEY CLUSTERED 
+(
+	[DateKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+----DimSchool---
+
+
+CREATE TABLE [dbo].[DimSchool](
+	[DimSchoolID] [int] IDENTITY(1,1) NOT NULL,
+	[SchoolCode] [int] NULL,
+	[PostSuburbkey] [nvarchar](max) NULL,
+	[SchoolName] [nvarchar](255) NULL,
+	[Street] [nvarchar](255) NULL,
+	[Suburb] [nvarchar](255) NULL,
+	[PostCode] [nvarchar](255) NULL,
+	[StudentNumber] [float] NULL,
+	[Indigenous_pct] [float] NULL,
+	[lbote_pct] [float] NULL,
+	[ICSEA_Value] [float] NULL,
+	[level_of_schooling] [nvarchar](255) NULL,
+	[School_specialty_type] [nvarchar](255) NULL,
+	[IsSchool] [nvarchar](255) NULL,
+	[phone] [nvarchar](255) NULL,
+	[School_email] [nvarchar](255) NULL,
+	[latitude] [float] NULL,
+	[longitude] [float] NULL,
+ CONSTRAINT [PK_DimSchool] PRIMARY KEY CLUSTERED 
+(
+	[DimSchoolID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+
+--DimStation--
+
+
+CREATE TABLE [dbo].[DimStation](
+	[StationIndex] [int] IDENTITY(1,1) NOT NULL,
+	[StationId] [int] NULL,
+	[StationSuburb] [nvarchar](255) NULL,
+	[StreetName] [nvarchar](255) NULL,
+	[StreetType] [nvarchar](255) NULL,
+	[Entrance_Type] [nvarchar](255) NULL,
+	[Exit_Number] [nvarchar](255) NULL,
+	[Latitude] [float] NULL,
+	[Longitude] [float] NULL,
+ CONSTRAINT [PK_DimStation] PRIMARY KEY CLUSTERED 
+(
+	[StationIndex] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+---DimSuburb--
+
+
+CREATE TABLE [dbo].[DimSuburb](
+	[PostSuburbkey] [nvarchar](255) NULL,
+	[PostCode] [nvarchar](255) NULL,
+	[Suburb] [nvarchar](255) NULL,
+	[City] [nvarchar](255) NULL,
+	[State] [nvarchar](255) NULL,
+	[Latitude] [float] NULL,
+	[Longitude] [float] NULL,
+	[SuburbKey] [int] NULL,
+	[DimSuburbKey] [int] IDENTITY(1,1) NOT NULL,
+ CONSTRAINT [PK_DimSuburb] PRIMARY KEY CLUSTERED 
+(
+	[DimSuburbKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+---FactProperty--
+
+CREATE TABLE [dbo].[FactProperty](
+	[FactProperty] [int] IDENTITY(1,1) NOT NULL,
+	[Property_Median_Value] [int] NULL,
+	[Updated_Year] [int] NULL,
+	[Updated_Month] [float] NULL,
+	[DimSuburbKey] [int] NULL,
+	[DimSchoolID] [int] NULL,
+	[StationIndex] [int] NULL,
+	[DateKey] [nvarchar](255) NULL,
+ CONSTRAINT [PK_FactProperty] PRIMARY KEY CLUSTERED 
+(
+	[FactProperty] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[FactProperty]  WITH CHECK ADD  CONSTRAINT [FK_FactProperty_DimDate1] FOREIGN KEY([DateKey])
+REFERENCES [dbo].[DimDate] ([DateKey])
+GO
+
+ALTER TABLE [dbo].[FactProperty] CHECK CONSTRAINT [FK_FactProperty_DimDate1]
+GO
+
+ALTER TABLE [dbo].[FactProperty]  WITH CHECK ADD  CONSTRAINT [FK_FactProperty_DimSchool] FOREIGN KEY([DimSchoolID])
+REFERENCES [dbo].[DimSchool] ([DimSchoolID])
+GO
+
+ALTER TABLE [dbo].[FactProperty] CHECK CONSTRAINT [FK_FactProperty_DimSchool]
+GO
+
+ALTER TABLE [dbo].[FactProperty]  WITH CHECK ADD  CONSTRAINT [FK_FactProperty_DimStation] FOREIGN KEY([StationIndex])
+REFERENCES [dbo].[DimStation] ([StationIndex])
+GO
+
+ALTER TABLE [dbo].[FactProperty] CHECK CONSTRAINT [FK_FactProperty_DimStation]
+GO
